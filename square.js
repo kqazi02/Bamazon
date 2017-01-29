@@ -4,6 +4,8 @@
 //Working on the Square
 var Shape = require("./index.js");
 
+console.log (Shape);
+
 //Declare our square
 //Capitalize
 function Square (side) {

@@ -11,6 +11,14 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
 	if (err) throw err;
 });
+
+connection.query("SELECT * FROM products", function(err, res) {
+	console.log(res);
+	for (var i = 0; i < res.length; i++) {
+
+		console.log("| Item ID: " + res[i].item_id + " | $" + res[i].price + " | " + res[i].product_name + " by " + res[i].author_name + " | From: " + res[i].department_name + " |" + "\n_____________________________________________________________________________________________________________");
+	}
+})
 purchaserQuery();
 
 function purchaserQuery() {
@@ -35,12 +43,25 @@ function purchaserQuery() {
 			if (stock >= quantity) {
 				var total = stock - quantity;
 				var cost = res[0].price;
-				console.log(total);
 
-				console.log("inside: " + item);
-				console.log("The items are available");
 				console.log("Your total comes to $" + (quantity * cost));
 				connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: total}, {item_id: item}], function(err, res) {});
+				inquirer.prompt([
+					{
+						type: "confirm",
+						name: "complete",
+						message: "Have you finished shopping?"
+					}
+				]).then(function(info){
+					var complete = info.complete;
+
+					if (complete) {
+						connection.end();
+					} else {
+						purchaserQuery();
+					}
+				})
+
 			} else {
 				console.log("Insufficient quantity!");
 				purchaserQuery();
